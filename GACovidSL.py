@@ -1,4 +1,4 @@
-import DataHandling as req
+import CovidAPI as ca
 import json
 import streamlit as st
 import numpy as np
@@ -9,8 +9,14 @@ import plotly.graph_objects as go
 st.title('Covid Data Analysis')
 st.write("This app is for exploring Georgia's Covid data")
 
+def data_retrieval():
+    newRun = ca.CovidAPI()
+    newRun.setDataPath("data/Georgia_Covid.json")
+    newRun.updateData("ga")
+    
 @st.cache(ttl=60*60*24)
 def load_data(filepath):
+    data_retrieval()
     data = pd.read_json(filepath)
     #data['date'] = data['date'].apply(pd.datetime)
     data['date'] = pd.to_datetime(data['date'], format="%Y%m%d")
@@ -19,7 +25,7 @@ def load_data(filepath):
     #data.drop(columns=['onVentilatorCumulative','recovered','onVentilatorCurrently','inIcuCurrently'])
     return data
 
-covid_data = load_data("newGCTest.json")#load_data("Georgia_Covid.json")
+covid_data = load_data("data\Georgia_Covid.json")#load_data("Georgia_Covid.json")
 choose_worktype = st.sidebar.selectbox("Select Work Type",['Work','Play'])
 if st.checkbox("Show Data"):
     st.write(covid_data)

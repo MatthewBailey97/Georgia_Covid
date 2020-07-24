@@ -1,5 +1,6 @@
 import requests, json
 from datetime import date, datetime, timedelta
+import os
 import numpy as np
 import pandas as pd
 
@@ -56,7 +57,7 @@ class CovidAPI:
                     
         updatedData = dataHold + self.localData
 
-        with open("newGCTest.json",'w') as outfile:
+        with open("data/Georgia_Covid.json",'w') as outfile:
             json.dump(updatedData,outfile)
         
         #print(dataHold)
