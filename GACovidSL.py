@@ -32,7 +32,55 @@ if st.checkbox("Show Data"):
     st.write("Dataset contains %s columns and %s rows" % (len(covid_data.columns),len(covid_data)))
 #fig = px.line(covid_data, x='date',y='positive')
 #st.plotly_chart(fig)
+if(choose_worktype == 'Work'):
+    barFig = go.Figure()
+    barFig.add_trace(go.Bar(x=covid_data['date'],y=covid_data['positiveIncrease'],name='positiveIncrease',text=covid_data['positiveIncrease'],textposition='outside',))
+    movingAvg_7 = covid_data['positiveIncrease'].rolling(7).mean()
+    barFig.add_trace(go.Scatter(x=covid_data['date'],y=movingAvg_7, name="7-Day moving average"))        
+    barFig.update_layout(
+    title="Daily increase of positive cases",
+    xaxis_title='Date',
+    yaxis_title='Positive Increase',
+    legend_title="Legend",
+    font=dict(
+        #family="Courier New, monospace",
+        size=15,
+        color="RebeccaPurple"
+    ),
+    height=600,
+    width=900,
+    )
+    barFig.update_layout(
+    xaxis=dict(
+        rangeselector=dict(
+            buttons=list([
+                dict(count=7,
+                    label="Weekly",
+                    step="day",
+                    stepmode="todate"),
+                dict(count=14,
+                    label="Biweekly",
+                    step="day",
+                    stepmode="backward"),
+                dict(count=1,
+                    label="Monthly",
+                    step="month",
+                    stepmode="backward"),
+                dict(count=1,
+                    label="YTD",
+                    step="year",
+                    stepmode="todate"),
+                dict(step="all")
+            ])
+        ),
+        rangeslider=dict(
+            visible=True
+        ),
+        type="date"
+    )
+    )
 
+    st.plotly_chart(barFig, use_container_width=False)
 if(choose_worktype == 'Play'):
     choose_x = st.sidebar.selectbox("Choose the x-data to plot",list(covid_data.columns))
     choose_y= st.sidebar.selectbox("Choose the y-data to plot",list(covid_data.columns))#['New_Deaths','New_Hospitalized',])
@@ -65,18 +113,50 @@ if(choose_worktype == 'Play'):
             #family="Courier New, monospace",
             size=15,
             color="RebeccaPurple"
+        ),
+        height=500,
+        width=900
+        )
+        scatterFig.update_layout(
+        xaxis=dict(
+            rangeselector=dict(
+                buttons=list([
+                    
+                    dict(count=7,
+                        label="Weekly",
+                        step="day",
+                        stepmode="todate"),
+                    dict(count=14,
+                        label="Biweekly",
+                        step="day",
+                        stepmode="backward"),
+                    dict(count=1,
+                        label="Monthly",
+                        step="month",
+                        stepmode="backward"),
+                    dict(count=1,
+                        label="YTD",
+                        step="year",
+                        stepmode="todate"),
+                    dict(step="all")
+                ])
+            ),
+            rangeslider=dict(
+                visible=True
+            ),
+            type="date"
         )
         )
 
-        scatterFig.update_layout(
-        autosize=False, 
-        height=450,
-        width=600)
+        #scatterFig.update_layout(
+        #autosize=False, 
+        #height=450,
+        #width=600)
 
         #movingAvg_7 = covid_data[choose_y].rolling(7).mean()
         scatterFig.add_trace(go.Scatter(x=covid_data[choose_x],y=movingAvg_7, name="7-Day moving average"))
 
-        st.plotly_chart(scatterFig, use_container_width=True)
+        st.plotly_chart(scatterFig, use_container_width=False)
     if st.checkbox("Bar Figure"):
         barFig = go.Figure()
         barFig.add_trace(go.Bar(x=covid_data[choose_x],y=covid_data[choose_y],name=choose_y,text=covid_data[choose_y],textposition='outside',))
@@ -91,16 +171,42 @@ if(choose_worktype == 'Play'):
             #family="Courier New, monospace",
             size=15,
             color="RebeccaPurple"
+        ),
+        height=600,
+        width=900,
         )
-        )
-
         barFig.update_layout(
-        autosize=False,
-        width=500,
-        height=500,
+        xaxis=dict(
+            rangeselector=dict(
+                buttons=list([
+                    
+                    dict(count=7,
+                        label="Weekly",
+                        step="day",
+                        stepmode="todate"),
+                    dict(count=14,
+                        label="Biweekly",
+                        step="day",
+                        stepmode="backward"),
+                    dict(count=1,
+                        label="Monthly",
+                        step="month",
+                        stepmode="backward"),
+                    dict(count=1,
+                        label="YTD",
+                        step="year",
+                        stepmode="todate"),
+                    dict(step="all")
+                ])
+            ),
+            rangeslider=dict(
+                visible=True
+            ),
+            type="date"
+        )
         )
 
-        st.plotly_chart(barFig, use_container_width=True)
+        st.plotly_chart(barFig, use_container_width=False)
 
     #scatterFig.add_trace(go.Scatter(x=covid_data['date'],y=covid_data['positive'], mode="lines+markers"))
 
