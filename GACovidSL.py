@@ -34,7 +34,7 @@ if st.checkbox("Show Data"):
 #st.plotly_chart(fig)
 if(choose_worktype == 'Work'):
     barFig = go.Figure()
-    barFig.add_trace(go.Bar(x=covid_data['date'],y=covid_data['positiveIncrease'],name='positiveIncrease',text=covid_data['positiveIncrease'],textposition='outside',))
+    barFig.add_trace(go.Bar(x=covid_data['date'],y=covid_data['positiveIncrease'],name='positiveIncrease',text=covid_data['positiveIncrease'],textposition='inside',))
     movingAvg_7 = covid_data['positiveIncrease'].rolling(7).mean()
     barFig.add_trace(go.Scatter(x=covid_data['date'],y=movingAvg_7, name="7-Day moving average"))        
     barFig.update_layout(
@@ -48,13 +48,13 @@ if(choose_worktype == 'Work'):
         color="RebeccaPurple"
     ),
     height=600,
-    width=900,
+    width=1000,
     )
     barFig.update_layout(
     xaxis=dict(
         rangeselector=dict(
             buttons=list([
-                dict(count=7,
+                dict(count=7.5,
                     label="Weekly",
                     step="day",
                     stepmode="todate"),
@@ -70,7 +70,7 @@ if(choose_worktype == 'Work'):
                     label="YTD",
                     step="year",
                     stepmode="todate"),
-                dict(step="all")
+                dict(label="All",step="all")
             ])
         ),
         rangeslider=dict(
@@ -79,6 +79,7 @@ if(choose_worktype == 'Work'):
         type="date"
     )
     )
+    barFig.update_yaxes(automargin=True)
 
     st.plotly_chart(barFig, use_container_width=False)
 if(choose_worktype == 'Play'):
@@ -155,11 +156,11 @@ if(choose_worktype == 'Play'):
 
         #movingAvg_7 = covid_data[choose_y].rolling(7).mean()
         scatterFig.add_trace(go.Scatter(x=covid_data[choose_x],y=movingAvg_7, name="7-Day moving average"))
-
+        scatterFig.update_yaxes(automargin=True)
         st.plotly_chart(scatterFig, use_container_width=False)
     if st.checkbox("Bar Figure"):
         barFig = go.Figure()
-        barFig.add_trace(go.Bar(x=covid_data[choose_x],y=covid_data[choose_y],name=choose_y,text=covid_data[choose_y],textposition='outside',))
+        barFig.add_trace(go.Bar(x=covid_data[choose_x],y=covid_data[choose_y],name=choose_y,text=covid_data[choose_y],textposition='inside',))
 
         barFig.add_trace(go.Scatter(x=covid_data[choose_x],y=movingAvg_7, name="7-Day moving average"))
         barFig.update_layout(
@@ -172,8 +173,8 @@ if(choose_worktype == 'Play'):
             size=15,
             color="RebeccaPurple"
         ),
-        height=600,
-        width=900,
+        height=700,
+        width=1000,
         )
         barFig.update_layout(
         xaxis=dict(
@@ -205,7 +206,7 @@ if(choose_worktype == 'Play'):
             type="date"
         )
         )
-
+        barFig.update_yaxes(automargin=True)
         st.plotly_chart(barFig, use_container_width=False)
 
     #scatterFig.add_trace(go.Scatter(x=covid_data['date'],y=covid_data['positive'], mode="lines+markers"))
