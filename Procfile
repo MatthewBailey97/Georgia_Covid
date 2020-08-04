@@ -1,1 +1,1 @@
-web: streamlit run $PORT GACovidSL.py 
+web: streamlit run GACovidSL.py 
