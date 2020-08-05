@@ -1,1 +1,1 @@
-web: streamlit run GACovidSL.py 
+web: streamlit run app.py 
