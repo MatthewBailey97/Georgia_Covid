@@ -230,38 +230,6 @@ if(choose_worktype == 'Play'):
         width=1000,
         xaxis=slider_template
         )
-        """
-        barFig.update_layout(
-        xaxis=dict(
-            rangeselector=dict(
-                buttons=list([
-                    
-                    dict(count=7,
-                        label="Weekly",
-                        step="day",
-                        stepmode="todate"),
-                    dict(count=14,
-                        label="Biweekly",
-                        step="day",
-                        stepmode="backward"),
-                    dict(count=1,
-                        label="Monthly",
-                        step="month",
-                        stepmode="backward"),
-                    dict(count=1,
-                        label="YTD",
-                        step="year",
-                        stepmode="todate"),
-                    dict(step="all")
-                ])
-            ),
-            rangeslider=dict(
-                visible=True
-            ),
-            type="date"
-        )
-        )
-        """
         barFig.update_yaxes(automargin=True)
         st.plotly_chart(barFig, use_container_width=False)
 
