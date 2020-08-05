@@ -38,7 +38,7 @@ def load_data(filepath):
     data = data.loc[:, (data != 0).any(axis=0)]
     return data
 
-covid_data = load_data("data\Georgia_Covid.json")
+covid_data = load_data("Georgia_Covid.json")
 st.sidebar.header("Navigation")
 choose_worktype = st.sidebar.selectbox("Go to",['Key metrics','Interactive','Play'])
 st.sidebar.header("About")
