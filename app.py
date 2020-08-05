@@ -42,7 +42,7 @@ covid_data = load_data("Georgia_Covid.json")
 st.sidebar.header("Navigation")
 choose_worktype = st.sidebar.selectbox("Go to",['Key metrics','Interactive','Play'])
 st.sidebar.header("About")
-st.sidebar.info("info")
+st.sidebar.info("This app is maintained by Matthew Bailey")
 
 if st.checkbox("Show Data"):
     st.dataframe(covid_data)
