@@ -17,7 +17,7 @@ def data_retrieval():
     for keeping the data file updated
     """
     data_request = ca.CovidAPI()
-    data_request.setDataPath("data/Georgia_Covid.json")
+    data_request.setDataPath("Georgia_Covid.json")
     data_request.updateData("ga")
     
 @st.cache(ttl=60*60*12)

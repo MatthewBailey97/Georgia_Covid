@@ -57,7 +57,7 @@ class CovidAPI:
                     
         updatedData = dataHold + self.localData
 
-        with open("data/Georgia_Covid.json",'w') as outfile:
+        with open("Georgia_Covid.json",'w') as outfile:
             json.dump(updatedData,outfile)
         
         #print(dataHold)
