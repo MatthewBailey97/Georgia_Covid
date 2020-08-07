@@ -9,13 +9,15 @@ from plotly.subplots import make_subplots
 import plotly.io as pio
 pio.templates.default = "plotly"
 
-def data_retrieval():
-    """Utilizes CovidAPI.py to handle data requests to "covidtracking.com" and
-    for keeping the data file updated
-    """
-    data_request = ca.CovidAPI()
-    data_request.setDataPath("Georgia_Covid.json")
-    data_request.updateData("ga")
+
+#! Deprecated. Dataset updates are handled separately 
+#def data_retrieval():
+#    """Utilizes CovidAPI.py to handle data requests to "covidtracking.com" and
+#    for keeping the data file updated
+#    """
+#    data_request = ca.CovidAPI()
+#    data_request.setDataPath("Georgia_Covid.json")
+#    data_request.updateData("ga")
     
 @st.cache(ttl=60*60*12)
 def load_data(filepath):
@@ -28,7 +30,7 @@ def load_data(filepath):
     Returns:
         Dataframe: Returns formatted Pandas dataframe
     """
-    data_retrieval()
+    #data_retrieval()
     data = pd.read_json(filepath)
     data['date'] = pd.to_datetime(data['date'], format="%Y%m%d")
     data = data.dropna(axis='columns', how='all')
