@@ -61,6 +61,10 @@ class CovidAPI:
         hDate = date.strftime("%Y%m%d")
         return self._requestData(self.baseURL+self.statesApi+stateAbrv.lower()+"/"+hDate+".json")
 
+    def requestAllStateDataCurrent(self):
+
+        return self._requestData(self.baseURL+self.statesApi+"/current.json")
+
     def _requestData(self, url):
         """Handles data request functions for each requst function
 
