@@ -41,8 +41,8 @@ keyMetrics = ['positive','negative', 'hospitalizedCurrently','hospitalizedCumula
 
 #@st.cache(ttl=60*60*12)
 #def load_data(filepath):
-def load_data(stateAbrv):
-    """This function is for loading and formatting the data file, and 
+def load_data(stateAbrv: str):
+    """This function is for requesting and formatting the state data, and 
     removing columns containing only 'NaN' or 0
 
     Args:
@@ -51,40 +51,27 @@ def load_data(stateAbrv):
     Returns:
         Dataframe: Returns formatted Pandas dataframe
     """
-    #data_retrieval()
-    #data = pd.read_json(filepath) #replaced by sql statements
-    #db = sqlite3.connect('US_Covid.db')
-    #c = db.cursor()
-    #dataQuery = "SELECT * FROM %s_covid" % (stateAbrv)
-    #data = pd.read_sql_query("SELECT * FROM us_covid ",db)
+    
     dataPath = get_connection(dbPath)
-
-    data = pd.read_sql_query("SELECT * FROM {}_covid".format(stateAbrv), dataPath) 
+    
+    data = pd.read_sql_query("SELECT * FROM US_covid WHERE state=='%s'" %(stateAbrv), dataPath) 
     data['date'] = pd.to_datetime(data['date'], format="%Y%m%d")
     data = data.dropna(axis='columns', how='all')
     data = data.loc[:, (data != 0).any(axis=0)]
-
-    #c.execute("""SELECT DISTINCT state
-    #FROM us_covid
-    #""")
-
-    #states = c.fetchall()
-    #stateAbrvs = []
-    #for state in states:
-     #   for st in state:
-      #      stateAbrvs.append(st)
 
     return data
     
 @st.cache(hash_funcs={Connection: id})    
 def get_connection(path: str):
+    """Function is for caching connection path to database
+
+    Args:
+        path (str): Path to sqlite database
+
+    Returns:
+        Objext: Returns a Connection object 
+    """
     return sqlite3.connect(path, check_same_thread=False)
-
-
-
-
-#stateFrame = load_data("Georgia_Covid.json")
-#stateFrame, stateAbrvs = load_data('US_Covid.db')
 
 st.sidebar.header("Navigation")
 sections = st.sidebar.selectbox("Go to",['Single State', 'State Comparison', 'Future Goals'])
@@ -314,8 +301,6 @@ if(sections =='State Comparison'):
     st.title("State Comparison")
     firstStateSelect = st.sidebar.selectbox("Choose first state",stateAbrvs,index=11)
     secondStateSelect = st.sidebar.selectbox("Choose second state",stateAbrvs,index=10)
-    #compareMetric = st.sidebar.selectbox("Comparison metric", )
-
 
     firstStateFrame = load_data(firstStateSelect)
     secondStateFrame = load_data(secondStateSelect)
@@ -331,18 +316,25 @@ if(sections =='State Comparison'):
             legend_title="Legend",
             xaxis=slider_template
             )
-    
-    comp_fig.add_trace(go.Bar(x=firstStateFrame['date'],y=firstStateFrame[compareMetric],name=firstStateSelect,text=firstStateFrame[compareMetric],textposition='inside',))
-    comp_fig.add_trace(go.Bar(x=secondStateFrame['date'],y=secondStateFrame[compareMetric],name=secondStateSelect,text=secondStateFrame[compareMetric],textposition='inside',))
-    
+    try:
+        comp_fig.add_trace(go.Bar(x=firstStateFrame['date'],y=firstStateFrame[compareMetric],name=firstStateSelect,text=firstStateFrame[compareMetric],textposition='inside',))
+    except:
+        st.markdown("**%s has insufficient %s data available**" % (firstStateSelect,compareMetric))
+    try:
+        comp_fig.add_trace(go.Bar(x=secondStateFrame['date'],y=secondStateFrame[compareMetric],name=secondStateSelect,text=secondStateFrame[compareMetric],textposition='inside',))
+    except:
+        st.markdown("**%s has insufficient %s data available**" % (secondStateSelect,compareMetric))
 
-
-    moving_avg_7 = firstStateFrame[compareMetric].rolling(7).mean()
-    moving_avg_72 = secondStateFrame[compareMetric].rolling(7).mean()
-
-    comp_fig.add_trace(go.Scatter(x=firstStateFrame['date'],y=moving_avg_7, name=firstStateSelect + " 7-Day average"))
-    comp_fig.add_trace(go.Scatter(x=secondStateFrame['date'],y=moving_avg_72, name=secondStateSelect + " 7-Day average"))
-
+    try:
+        moving_avg_7 = firstStateFrame[compareMetric].rolling(7).mean()
+        comp_fig.add_trace(go.Scatter(x=firstStateFrame['date'],y=moving_avg_7, name=firstStateSelect + " 7-Day average"))
+    except:
+        st.markdown("**%s has insufficient %s data available**" % (firstStateSelect,compareMetric))
+    try:
+        moving_avg_7_2 = secondStateFrame[compareMetric].rolling(7).mean()
+        comp_fig.add_trace(go.Scatter(x=secondStateFrame['date'],y=moving_avg_7_2, name=secondStateSelect + " 7-Day average"))
+    except:
+        st.markdown("")
 
     #comp_fig.update_layout(barmode='stack')
     comp_fig.update_yaxes(automargin=True)
@@ -352,7 +344,13 @@ if(sections =='State Comparison'):
 
 if(sections == 'Future Goals'):
     st.title("Future Goals")
-    st.markdown("<ul> <s><b><li>Add state selection</s> <b><li>Include national average comparisons within graphs <ul> ",unsafe_allow_html=True)
+    st.markdown("""
+        <ul> <s><b><li>Add state selection</li></b></s> 
+        <b><li>Include national average comparisons within graphs</li></b>
+        <b><li>Improve data insufficiency display</li></b>
+        <b><li>Add state data quality page</li></b>
+        
+        </ul>""",unsafe_allow_html=True)
 
 st.sidebar.header("About")
 st.sidebar.info("This app is maintained by Matthew Bailey. The code can be found on [Github](https://github.com/MatthewBailey97/Georgia_Covid)")
