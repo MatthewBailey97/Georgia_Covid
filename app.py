@@ -1,6 +1,6 @@
 from sqlite3 import dbapi2
 #import CovidAPI as ca
-#import json
+import json
 import streamlit as st
 #import numpy as np
 import pandas as pd
@@ -27,6 +27,8 @@ for state in states:
 c.close()
 db.close()
 
+with open("us_state_abbrev.json",'r') as file:
+    state_Abrv_Names = json.load(file)
 
 keyMetrics = ['positive','negative', 'hospitalizedCurrently','hospitalizedCumulative','death','hospitalized','positiveIncrease','negativeIncrease','total','deathIncrease','hospitalizedIncrease']
 
@@ -128,7 +130,7 @@ if(sections == 'Single State'):
     st.title('US Covid Statistics')
     st.write("This app is for visualizing United States Covid data")
     st.write("The data for this app was acquired from [The COVID Tracking Project](https://covidtracking.com/), where every day volunteers are ensuring that the public has the best available Covid data.")
-
+    st.title(state_Abrv_Names[stateSelect])
     if st.checkbox("Show Data"):
         st.dataframe(stateFrame)
         st.write("Dataset contains %s columns and %s rows" % (len(stateFrame.columns),len(stateFrame)))
