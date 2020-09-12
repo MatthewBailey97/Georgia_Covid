@@ -1,16 +1,16 @@
 from sqlite3 import dbapi2
-import CovidAPI as ca
-import json
+#import CovidAPI as ca
+#import json
 import streamlit as st
-import numpy as np
+#import numpy as np
 import pandas as pd
-import plotly.express as px
+#import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import plotly.io as pio
 import sqlite3
 from sqlite3 import Connection
-from pathlib import Path
+#from pathlib import Path
 pio.templates.default = "plotly"
 dbPath = 'US_Covid.db'
 db = sqlite3.connect('US_Covid.db')
@@ -30,7 +30,6 @@ db.close()
 
 keyMetrics = ['positive','negative', 'hospitalizedCurrently','hospitalizedCumulative','death','hospitalized','positiveIncrease','negativeIncrease','total','deathIncrease','hospitalizedIncrease']
 
-#! Deprecated. Dataset updates are handled separately 
 #def data_retrieval():
 #    """Utilizes CovidAPI.py to handle data requests to "covidtracking.com" and
 #    for keeping the data file updated
@@ -54,11 +53,11 @@ def load_data(stateAbrv: str):
     
     dataPath = get_connection(dbPath)
     
-    data = pd.read_sql_query("SELECT * FROM US_covid WHERE state=='%s'" %(stateAbrv), dataPath) 
+    data = pd.read_sql_query("SELECT * FROM US_covid WHERE state=='%s' ORDER BY date DESC" % (stateAbrv), dataPath) 
     data['date'] = pd.to_datetime(data['date'], format="%Y%m%d")
     data = data.dropna(axis='columns', how='all')
     data = data.loc[:, (data != 0).any(axis=0)]
-
+    #dataPath.close()
     return data
     
 @st.cache(hash_funcs={Connection: id})    
@@ -297,15 +296,17 @@ if(sections == 'Single State'):
         except:
             st.markdown("**Insufficient hospitalization increase data available**")
 
+
+
 if(sections =='State Comparison'):
     st.title("State Comparison")
-    firstStateSelect = st.sidebar.selectbox("Choose first state",stateAbrvs,index=11)
-    secondStateSelect = st.sidebar.selectbox("Choose second state",stateAbrvs,index=10)
+    firstStateSelect = st.sidebar.selectbox("Choose First State/Territory",stateAbrvs,index=11)
+    secondStateSelect = st.sidebar.selectbox("Choose Second State/Territory",stateAbrvs,index=10)
 
     firstStateFrame = load_data(firstStateSelect)
     secondStateFrame = load_data(secondStateSelect)
 
-    compareMetric = st.sidebar.selectbox("Comparison metric", keyMetrics,index=6)
+    compareMetric = st.sidebar.selectbox("Comparison Metric", keyMetrics,index=6)
 
     comp_fig = go.Figure()
     comp_fig.update_layout(covid_template)
