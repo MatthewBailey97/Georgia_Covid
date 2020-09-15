@@ -17,7 +17,7 @@ print(holdFrame.head)
 holdFrame = holdFrame.dropna(axis='columns', how='all')
 holdFrame = holdFrame.loc[:, (holdFrame != 0).any(axis=0)]
 #%%
-c.execute("SELECT date FROM US_covid LIMIT 1;")
+c.execute("SELECT date FROM US_covid ORDER BY date DESC LIMIT 1;")
 lastDate = c.fetchone()[0]
 print(lastDate)
 #%%
@@ -36,43 +36,7 @@ newDataFrame.to_sql('Update_DB',db,if_exists='replace',index=False)
 #c.execute("SELECT DISTINCT state, dataQualityGrade FROM US_covid  WHERE dataQualityGrade LIKE'A%' GROUP BY state;")
 #goodState = c.fetchall()
 #print(goodState)
-# %%
-list(newDataFrame.columns.values)
-# %%
 
-c.row_factory = sqlite3.Row
-c.execute("""
-SELECT *
-FROM US_covid
-""")
-row = c.fetchone()
-names = row.keys()
-print(names)
-
-# %%
-
-c.row_factory = sqlite3.Row
-c.execute("""
-SELECT *
-FROM Update_DB
-""")
-update_row = c.fetchone()
-update_names = update_row.keys()
-print(type(update_names))
-print(update_names)
-#%%
-if names == update_names:
-    print("Names and update_names are equal")
-else:
-    print("Names and update_names are NOT equal")
-# %%
-c.close()
-# %%
-c = db.cursor()
-# %%
-#c.execute("SELECT * FROM US_covid")
-#names = [description[0] for description in db.cursor.]
-#print(names)
 # %%
 testingFrame = pd.read_sql_query("SELECT * FROM US_covid",db)
 
