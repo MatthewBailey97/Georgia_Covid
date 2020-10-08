@@ -11,22 +11,72 @@ db = sqlite3.connect('US_Covid.db')
 c = db.cursor()
 
 #%%
+
+c.execute("""
+    SELECT *
+    FROM US_covid
+
+""")
+rez = c.fetchmany(20)
+print(rez)
+
+#%%
+c.execute("""
+    DROP TABLE US_covid
+""")
+#%%
+db.commit()
+
+#%%
+import requests
+
+#%%
+# Database reset part: 1
+url = "https://api.covidtracking.com/v1/states/daily.json"
+req = requests.get(url)
+reqData = req.json()
+
+holdFrame = pd.DataFrame.from_dict(reqData)
+
+holdFrame.to_sql('Update_DB', db, if_exists='replace', index=False)
+
+#%%
+# Database reset part: 2
+c.execute("""
+    CREATE TABLE US_Covid AS
+    SELECT date, state, positive, negative, hospitalizedCurrently, hospitalizedCumulative, dataQualityGrade, death, hospitalized, positiveIncrease, negativeIncrease, total, deathIncrease, hospitalizedIncrease
+    FROM Update_DB
+""")
+
+#%%
 c.execute(""" 
-    SELECT date, hospitalizedCumulative
-    FROM CA_covid
-    
-
-
+    SELECT date, state, positiveIncrease
+    FROM US_covid
+    WHERE state == 'GA'
+    ORDER BY date DESC;
     """)
-results = c.fetchmany(10)
+results = c.fetchmany(5)
+print(results)
 
-
+#%%
+c.execute(""" 
+    SELECT date, state, positiveIncrease
+    FROM US_covid
+    WHERE state == 'GA' AND date == '20200918'
+    ORDER BY date DESC;
+    """)
+checker = c.fetchall()
+print(checker)
 
 
 #%%
-print(type(results))
-print(type(results[0]))
-print(results)
+#c.execute("""
+ #   DELETE FROM US_covid
+  #  WHERE date == 20200918
+
+#""")
+#db.commit()
+
 #%%
 traffic = json.load(open("US_States_Covid.json"))
 #%%
