@@ -11,6 +11,9 @@ import plotly.io as pio
 import sqlite3
 from sqlite3 import Connection
 #from pathlib import Path
+from formatting import CovidFormat as cf
+
+
 pio.templates.default = "plotly"
 dbPath = 'US_Covid.db'
 db = sqlite3.connect('US_Covid.db')
@@ -95,52 +98,25 @@ def get_connection(path: str):
     """
     return sqlite3.connect(path, check_same_thread=False)
 
+def _max_width_():
+    max_width_str = f"max-width: 2000px;"
+    st.markdown(
+        f"""
+    <style>
+    .reportview-container .main .block-container{{
+        {max_width_str}
+    }}
+    </style>    
+    """,
+        unsafe_allow_html=True,
+    )
+
+_max_width_()
+
+
+
 st.sidebar.header("Navigation")
 sections = st.sidebar.selectbox("Go to",['Single State', 'State Comparison', 'State Data Quality', 'Future Goals'])
-
-
-
-# Template for plot visuals
-covid_template = dict(
-    font=dict(
-        #family="Courier New, monospace",
-        size=15,
-        color="Black"
-    ),
-    height=600,
-    width=900,
-
-    )
-
-# Template for handling slider functionality for plots and providing buttons to alter time-period range of data
-slider_template = dict(
-        rangeselector=dict(
-            buttons=list([
-                dict(count=7.5,
-                    label="Weekly",
-                    step="day",
-                    stepmode="todate"),
-                dict(count=14,
-                    label="Biweekly",
-                    step="day",
-                    stepmode="backward"),
-                dict(count=1,
-                    label="Monthly",
-                    step="month",
-                    stepmode="backward"),
-                dict(count=1,
-                    label="Yearly",
-                    step="year",
-                    stepmode="todate"),
-                dict(label="All",step="all")
-            ])
-        ),
-        rangeslider=dict(
-            visible=True
-        ),
-        type="date"
-    )
-
 
 
 if(sections == 'Single State'):
@@ -161,14 +137,14 @@ if(sections == 'Single State'):
     try:
     # Positive increase
         pos_inc_fig = go.Figure()
-        pos_inc_fig.update_layout(covid_template)
+        pos_inc_fig.update_layout(cf.covid_template)
         pos_inc_fig.update_layout(
-            #template=covid_template,
+            #template=cf.covid_template,
             title="Daily increase of positive cases",
             xaxis_title='Date',
             yaxis_title='Daily Positive Increase',
             legend_title="Legend",
-            xaxis=slider_template
+            xaxis=cf.slider_template
             )
         pos_inc_fig.add_trace(go.Bar(x=stateFrame['date'],y=stateFrame['positiveIncrease'],name='Positive Increase',text=stateFrame['positiveIncrease'],textposition='inside',))
         
@@ -176,7 +152,7 @@ if(sections == 'Single State'):
         pos_inc_fig.add_trace(go.Scatter(x=stateFrame['date'],y=moving_avg_7, name="7-Day average"))
         pos_inc_fig.update_yaxes(automargin=True)
         
-        st.plotly_chart(pos_inc_fig, use_container_width=False)
+        st.plotly_chart(pos_inc_fig, use_container_width=True)
     except:
         st.markdown("**Insufficient positive increase data available**")
 
@@ -184,14 +160,14 @@ if(sections == 'Single State'):
         try:
             # Total Positive
             pos_cumu_fig = go.Figure()
-            pos_cumu_fig.update_layout(covid_template)
+            pos_cumu_fig.update_layout(cf.covid_template)
             pos_cumu_fig.update_layout(
-                #template=covid_template,
+                #template=cf.covid_template,
                 title="Total Positive Cases",
                 xaxis_title='Date',
                 yaxis_title='Positive Cumulative',
                 legend_title="Legend",
-                xaxis=slider_template
+                xaxis=cf.slider_template
                 )
             pos_cumu_fig.add_trace(go.Bar(x=stateFrame['date'],y=stateFrame['positive'],name='Positive',text=stateFrame['positive'],textposition='inside',))
         
@@ -200,20 +176,20 @@ if(sections == 'Single State'):
 
             pos_cumu_fig.update_yaxes(automargin=True)
         
-            st.plotly_chart(pos_cumu_fig, use_container_width=False)
+            st.plotly_chart(pos_cumu_fig, use_container_width=True)
         except:
             st.markdown("**Insufficient hospitalization increase data available**")
 
     try:
     # Death Increase
         dth_inc_fig = go.Figure()
-        dth_inc_fig.update_layout(covid_template)
+        dth_inc_fig.update_layout(cf.covid_template)
         dth_inc_fig.update_layout(
             title="Daily Increase of Deaths",
             xaxis_title='Date',
             yaxis_title='Death Increase',
             legend_title="Legend",
-            xaxis=slider_template
+            xaxis=cf.slider_template
             )
         dth_inc_fig.add_trace(go.Bar(x=stateFrame['date'],y=stateFrame['deathIncrease'],name='Death Increase',text=stateFrame['deathIncrease'],textposition='inside',))
         
@@ -222,7 +198,7 @@ if(sections == 'Single State'):
 
         dth_inc_fig.update_yaxes(automargin=True)
         
-        st.plotly_chart(dth_inc_fig, use_container_width=False)
+        st.plotly_chart(dth_inc_fig, use_container_width=True)
     except:
         st.markdown("**Insufficient hospitalization increase data available**")
 
@@ -231,13 +207,13 @@ if(sections == 'Single State'):
     if(st.checkbox("Death Cumulative")):
         try:
             dth_cumu_fig = go.Figure()
-            dth_cumu_fig.update_layout(covid_template)
+            dth_cumu_fig.update_layout(cf.covid_template)
             dth_cumu_fig.update_layout(
                 title="Total Deaths",
                 xaxis_title='Date',
                 yaxis_title='Deaths Cumulative',
                 legend_title="Legend",
-                xaxis=slider_template
+                xaxis=cf.slider_template
                 )
             dth_cumu_fig.add_trace(go.Bar(x=stateFrame['date'],y=stateFrame['death'],name='Death Count',text=stateFrame['death'],textposition='inside',))
         
@@ -246,19 +222,19 @@ if(sections == 'Single State'):
 
             dth_cumu_fig.update_yaxes(automargin=True)
         
-            st.plotly_chart(dth_cumu_fig, use_container_width=False)
+            st.plotly_chart(dth_cumu_fig, use_container_width=True)
         except:
             st.markdown("**Insufficient hospitalization increase data available**")
     try:
         # Hospitalized Increase
         hosp_inc_fig = go.Figure()
-        hosp_inc_fig.update_layout(covid_template)
+        hosp_inc_fig.update_layout(cf.covid_template)
         hosp_inc_fig.update_layout(
             title="Daily Increase of Hospitalizations",
             xaxis_title='Date',
             yaxis_title='Hospitalization Increase',
             legend_title="Legend",
-            xaxis=slider_template
+            xaxis=cf.slider_template
             )
     
         hosp_inc_fig.add_trace(go.Bar(x=stateFrame['date'],y=stateFrame['hospitalizedIncrease'],name='Hospitalized Increase',text=stateFrame['hospitalizedIncrease'],textposition='inside',))
@@ -270,20 +246,20 @@ if(sections == 'Single State'):
 
         hosp_inc_fig.update_yaxes(automargin=True)
     
-        st.plotly_chart(hosp_inc_fig, use_container_width=False)
+        st.plotly_chart(hosp_inc_fig, use_container_width=True)
     except:
         st.markdown("**Insufficient hospitalization increase data available**")
 
     try:
     # Hospitalized Currently
         hosp_cur_fig = go.Figure()
-        hosp_cur_fig.update_layout(covid_template)
+        hosp_cur_fig.update_layout(cf.covid_template)
         hosp_cur_fig.update_layout(
             title="Currently Hospitalized",
             xaxis_title='Date',
             yaxis_title='Hospitalized',
             legend_title="Legend",
-            xaxis=slider_template
+            xaxis=cf.slider_template
             )
         hosp_cur_fig.add_trace(go.Bar(x=stateFrame['date'],y=stateFrame['hospitalizedCurrently'],name='Hosptialized Currently',text=stateFrame['hospitalizedCurrently'],textposition='inside',))
         
@@ -292,7 +268,7 @@ if(sections == 'Single State'):
 
         hosp_cur_fig.update_yaxes(automargin=True)
         
-        st.plotly_chart(hosp_cur_fig, use_container_width=False)
+        st.plotly_chart(hosp_cur_fig, use_container_width=True)
     except:
         st.markdown("**Insufficient hospitalization increase data available**")
 
@@ -301,13 +277,13 @@ if(sections == 'Single State'):
     if(st.checkbox("Hospitalized Cumulative")):
         try:
             hosp_cumu_fig = go.Figure()
-            hosp_cumu_fig.update_layout(covid_template)
+            hosp_cumu_fig.update_layout(cf.covid_template)
             hosp_cumu_fig.update_layout(
                 title="Total Hospitalizations",
                 xaxis_title='Date',
                 yaxis_title='Hospitalized Cumulative',
                 legend_title="Legend",
-                xaxis=slider_template
+                xaxis=cf.slider_template
                 )
             hosp_cumu_fig.add_trace(go.Bar(x=stateFrame['date'],y=stateFrame['hospitalizedCumulative'],name='positive',text=stateFrame['hospitalizedCumulative'],textposition='inside',))
         
@@ -316,7 +292,7 @@ if(sections == 'Single State'):
 
             hosp_cumu_fig.update_yaxes(automargin=True)
         
-            st.plotly_chart(hosp_cumu_fig, use_container_width=False)
+            st.plotly_chart(hosp_cumu_fig, use_container_width=True)
         except:
             st.markdown("**Insufficient hospitalization increase data available**")
 
@@ -333,13 +309,13 @@ if(sections =='State Comparison'):
     compareMetric = st.sidebar.selectbox("Comparison Metric", keyMetrics,index=6)
 
     comp_fig = go.Figure()
-    comp_fig.update_layout(covid_template)
+    comp_fig.update_layout(cf.covid_template)
     comp_fig.update_layout(
             title=compareMetric + " Comparison",
             xaxis_title='Date',
             yaxis_title=compareMetric,
             legend_title="Legend",
-            xaxis=slider_template
+            xaxis=cf.slider_template
             )
     try:
         comp_fig.add_trace(go.Bar(x=firstStateFrame['date'],y=firstStateFrame[compareMetric],name=firstStateSelect,text=firstStateFrame[compareMetric],textposition='inside',))
@@ -364,20 +340,20 @@ if(sections =='State Comparison'):
     #comp_fig.update_layout(barmode='stack')
     comp_fig.update_yaxes(automargin=True)
 
-    st.plotly_chart(comp_fig, use_container_width=False)
+    st.plotly_chart(comp_fig, use_container_width=True)
 
 if(sections == 'State Data Quality'):
     st.title("State Data Quality")
     qualityFrame = load_recent_data()
 
     qual_fig = go.Figure()
-    qual_fig.update_layout(covid_template)
+    qual_fig.update_layout(cf.covid_template)
     qual_fig.update_layout(
             title='State Data Quality',
             xaxis_title='Data Quality',
             yaxis_title='State Count',
             legend_title='Legend',
-            #xaxis=slider_template
+            #xaxis=cf.slider_template
             )
     qual_fig.update_layout(xaxis={'categoryorder':'array','categoryarray':['A+','A','B','C','D','F','NULL']})
 
@@ -387,8 +363,8 @@ if(sections == 'State Data Quality'):
     
     qual_fig.add_trace(go.Bar(x=newGradeCount['dataQualityGrade'],y=newGradeCount['Counts']))
 
-    st.plotly_chart(qual_fig, use_container_width=False)
-    st.table(qualityFrame[['state','dataQualityGrade']])
+    st.plotly_chart(qual_fig, use_container_width=True)
+    st.table(qualityFrame[['state','dataQualityGrade','total']])
 
 
 if(sections == 'Future Goals'):
