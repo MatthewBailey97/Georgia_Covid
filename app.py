@@ -355,9 +355,9 @@ if(sections == 'State Data Quality'):
             legend_title='Legend',
             #xaxis=cf.slider_template
             )
-    qual_fig.update_layout(xaxis={'categoryorder':'array','categoryarray':['A+','A','B','C','D','F','NULL']})
+    qual_fig.update_layout(xaxis={'categoryorder':'array','categoryarray':['A+','A','B','C','D','F','N/A']})
 
-    categoryarray = ['A+','A','B','C','D']
+    categoryarray = ['A+','A','B','C','D','N/A']
     gradeCount = qualityFrame.groupby('dataQualityGrade',as_index=True,)['state'].count()
     newGradeCount = pd.DataFrame({'dataQualityGrade':categoryarray,'Counts':gradeCount.values})
     

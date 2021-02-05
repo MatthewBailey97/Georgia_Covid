@@ -9,9 +9,25 @@ db = sqlite3.connect('US_Covid.db')
 
 # %%
 c = db.cursor()
+# %%
+c.execute("""
+    SELECT date, state, positiveIncrease 
+    FROM US_Covid
+    WHERE date > 20201020 AND state = 'GA'
+    ORDER BY date;
+""")
+fetch = c.fetchall()
 
+print(fetch)
+
+# %%
+c.execute("""
+    DELETE FROM US_Covid
+    WHERE date > 20201020
+""")
+# %%
+db.commit()
 #%%
-
 c.execute("""
     SELECT *
     FROM US_covid
